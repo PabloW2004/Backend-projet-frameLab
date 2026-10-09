@@ -1,95 +1,98 @@
 <?php
 
+use App\Http\Controllers\Api\ChallengeController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\ParticipationController;
+use App\Http\Controllers\Api\SignalementController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 //Authentification
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/register', function () {
-    return NULL;
-});
+// Inscription d'un nouvel utilisateur
+Route::post('/users', [UserController::class, "store"]
+);
 
-Route::get('/verify/{token}', function () {
-    return NULL;
-});
+// Validation du compte utilisateur via l'URL de validation
+Route::get('/verify/{token}', [UserController::class, "validation"]);
 
-Route::post('/session', function () {
-    return NULL;
-});
+// Connexion de l'utilisateur et récupération du token d'authentification
+Route::post('/sessions', [UserController::class, "login"]);
+Route::get('/sessions', [UserController::class, "checkUser"])->middleware('auth:sanctum');
 
-Route::delete('/session', function () {
-    return NULL;
-});
+// Déconnexion de l'utilisateur
+Route::delete('/sessions', [UserController::class, "logout"])->middleware('auth:sanctum');
 
-//challenges
-Route::get('/challenges/current', function () {
-    return NULL;
-});
 
-Route::get('/challenges', function () {
-    return NULL;
-});
+// Récupération du challenge actuellement actif
+Route::get('/challenges/current', [ChallengeController::class, 'current']);
 
-Route::get('/challenges/{id}', function () {
-    return NULL;
-});
+// Récupération de tous les challenges passés et actuels
+Route::get('/challenges', [ChallengeController::class, 'index']);
 
-Route::post('/admin/challenges', function () {
-    return NULL;
-});
+// Récupération d'un challenge précis
+Route::get('/challenges/{challenge}', [ChallengeController::class, 'show']);
+
+// Publication d'un nouveau challenge par un administrateur
+Route::post('/admin/challenges', [ChallengeController::class, 'store'])->middleware('auth:sanctum');;
+
+
 
 //participations
-Route::get('/challenges/current/participations', function () {
-    return NULL;
-});
+// Récupération de toutes les participations du challenge actuellement actif
+Route::get('/challenges/current/participations', [ParticipationController::class, "allCurrent"]);
 
-Route::get('/challenges/{id}/participations', function () {
-    return NULL;
-});
+// Récupération des participations d'un ancien challenge
+Route::get('/challenges/{id}/participations', [ParticipationController::class, "fetchOld"]);
 
-Route::get('/participations/{id}', function () {
-    return NULL;
-});
+// Récupération du détail d'une participation : photo, auteur, tags, notes moyennes et nombre de commentaires
+Route::get('/participations/{id}', [ParticipationController::class, "fetchOne"]);
 
-Route::post('/participations', function () {
-    return NULL;
-});
+// Soumission d'une participation avec l'image retouchée et les tags éventuels
+Route::post('/participations', [ParticipationController::class, "store"]);
+
+
 
 //Votes
-Route::get('/participations/{id}/comments', function () {
-    return NULL;
-});
+// Ajout d'un vote sur une participation avec les notes créativité, technique et respect du thème
+Route::get('/participations/{id}/votes', [VoteController::class, "store"]);
 
-Route::post('/participations/{id}/comments', function () {
-    return NULL;
-});
 
-Route::patch('/comments/{id}', function () {
-    return NULL;
-});
 
-Route::delete('/comments/{id}', function () {
-    return NULL;
-});
+//commentaires
+// Récupération chronologique des commentaires d'une participation
+Route::get('/participations/{id}/comments', [CommentController::class, "fetchAll"]);
+
+// Ajout d'un commentaire sur une participation
+Route::post('/participations/{id}/comments', [CommentController::class, "store"]);
+
+// Modification de son propre commentaire
+Route::patch('/comments/{id}', [CommentController::class, "updateMine"]);
+
+// Suppression de son propre commentaire
+Route::delete('/comments/{id}', [CommentController::class, "destroyMine"]);
+
 
 
 //historique personnel
-Route::get('/user/participations', function () {
-    return NULL;
-});
+// Récupération des participations passées et actuelles de l'utilisateur connecté,
+// avec les notes et commentaires reçus
+Route::get('/user/participations', [UserController::class, "fetchParticipation"]);
 
-Route::get('/user/statistics', function () {
-    return NULL;
-});
+// Récupération des statistiques personnelles : nombre de participations et note moyenne globale
+Route::get('/user/statistics', [UserController::class, "fetchStatisctics"]);
+
+
 
 //signalements
-Route::post('/participations/{id}/reports', function () {
-    return NULL;
-});
+// Signalement d'une participation avec un motif
+Route::post('/participations/{id}/reports', [SignalementController::class, "storeForParticipation"]);
 
-Route::post('/comments/{id}/reports', function () {
-    return NULL;
-});
+// Signalement d'un commentaire avec un motif
+Route::post('/comments/{id}/reports', [SignalementController::class, "storeForComment"]);

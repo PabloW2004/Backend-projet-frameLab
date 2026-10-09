@@ -25,14 +25,14 @@ return new class extends Migration
             $table->timestamp('date_validation')->nullable();
 
             $table->rememberToken();
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
 
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
 
 
@@ -48,7 +48,7 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->longText('payload');
             $table->integer('last_activity')->index();
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
 
 
@@ -59,10 +59,9 @@ return new class extends Migration
             $table->text('description');
             $table->string('categorie');
             $table->string('img_primary');
-            $table->timestamps('created_at');
-
             $table->timestamp('starting_date');
             $table->timestamp('finishing_date');
+            $table->timestamps();
 
             $table->boolean('actif')->default(true);
         });
@@ -92,7 +91,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->unique(['id_user', 'id_challenge']);
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
 
 
@@ -111,7 +110,7 @@ return new class extends Migration
             $table->unsignedTinyInteger('technical_note');
             $table->unsignedTinyInteger('theme_note');
 
-            $table->timestamps('created_at');
+            $table->timestamps();
 
             $table->primary(['id_user', 'id_participation']);
         });
@@ -120,7 +119,7 @@ return new class extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
             $table->string('libelle')->unique();
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
 
 
@@ -147,7 +146,7 @@ return new class extends Migration
                 ->on('users')
                 ->onDelete('cascade');
 
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
 
 
@@ -162,7 +161,7 @@ return new class extends Migration
                 ->on('tags')
                 ->onDelete('cascade');
             
-            $table->timestamps('created_at');
+            $table->timestamps();
 
             $table->primary(['id_participation', 'id_tag']);
         });
@@ -194,7 +193,7 @@ return new class extends Migration
             $table->unique(['id_user', 'id_participation']);
             $table->unique(['id_user', 'id_commentaire']);
 
-            $table->timestamps('created_at');
+            $table->timestamps();
         });
     }
 
